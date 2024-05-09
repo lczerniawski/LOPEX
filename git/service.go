@@ -9,7 +9,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/lczerniawski/LeftOverProjectFiles/helpers"
+	"github.com/lczerniawski/LOPEX/helpers"
 )
 
 func TryDumpGitRepo(baseUrl string) error {

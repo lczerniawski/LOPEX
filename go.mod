@@ -1,4 +1,4 @@
-module github.com/lczerniawski/LeftOverProjectFiles
+module github.com/lczerniawski/LOPEX
 
 go 1.22.2
 

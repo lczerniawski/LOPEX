@@ -4,14 +4,14 @@ import (
 	"log"
 	"os"
 
-	"github.com/lczerniawski/LeftOverProjectFiles/git"
+	"github.com/lczerniawski/LOPEX/git"
 	"github.com/urfave/cli/v2"
 )
 
 func main() {
 	app := &cli.App{
-		Name:   "boom",
-		Usage:  "make an explosive entrance",
+		Name:   "lopex",
+		Usage:  "LOPEX is a powerful command-line tool designed to exploit misconfigured web servers and extract leftover files from source control repositories.",
 		Action: dumpGitRepo,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
