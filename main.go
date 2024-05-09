@@ -94,9 +94,6 @@ func tryDownloadDotGitFiles(baseUrl string) error {
 		return err
 	}
 
-	// Call for getting getTreeHashesFromTrees to get all the files inside folders
-	// Needs to be called in recursive way until there are no more folders
-
 	for hash, name := range blobHashesWithName {
 		content, err := getFileContentFromBlob(hash)
 		if err != nil {
@@ -108,6 +105,85 @@ func tryDownloadDotGitFiles(baseUrl string) error {
 		if err != nil {
 			continue
 		}
+	}
+
+	err = getFilesRecursively(baseUrl, treeHashes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func getFilesRecursively(baseUrl string, treeHashes []string) error {
+	treeHashesWithName, err := getTreeHashesWithNameFromTrees(treeHashes)
+	if err != nil {
+		return err
+	}
+
+	treeHashesArr := convertMapToArray(treeHashesWithName)
+	err = downloadAndSaveGitHubObjectFiles(baseUrl, treeHashesArr)
+	if err != nil {
+		return err
+	}
+
+	for {
+		// Check if there are any more folders to download
+		if len(treeHashesArr) == 0 {
+			break
+		}
+
+		treeHash := treeHashesArr[0]
+		treeName := treeHashesWithName[treeHash]
+		treeHashesArr = treeHashesArr[1:]
+
+		// Get all the files inside the folders
+		blobHashesWithNameTemp, err := getBlobHashesAndNamesFromTrees([]string{treeHash})
+		if err != nil {
+			return err
+		}
+
+		blobHashesTemp := convertMapToArray(blobHashesWithNameTemp)
+		err = downloadAndSaveGitHubObjectFiles(baseUrl, blobHashesTemp)
+		if err != nil {
+			return err
+		}
+
+		for hash, name := range blobHashesWithNameTemp {
+			content, err := getFileContentFromBlob(hash)
+			if err != nil {
+				continue
+			}
+
+			fileName := fmt.Sprintf("repoDump/%s/%d-%s", treeName, rand.Int(), name)
+			err = saveStringToDisc(content, fileName)
+			if err != nil {
+				continue
+			}
+		}
+
+		blobHashes := convertMapToArray(blobHashesWithNameTemp)
+		err = downloadAndSaveGitHubObjectFiles(baseUrl, blobHashes)
+		if err != nil {
+			return err
+		}
+
+		treeHashesWithNameTemp, err := getTreeHashesWithNameFromTrees([]string{treeHash})
+		if err != nil {
+			return err
+		}
+
+		for hash, name := range treeHashesWithNameTemp {
+			treeHashesWithName[hash] = path.Join(treeName, name)
+		}
+
+		treeHashesArrTemp := convertMapToArray(treeHashesWithNameTemp)
+		err = downloadAndSaveGitHubObjectFiles(baseUrl, treeHashesArr)
+		if err != nil {
+			return err
+		}
+
+		treeHashesArr = append(treeHashesArr, treeHashesArrTemp...)
 	}
 
 	return nil
@@ -246,7 +322,7 @@ func getTreeHashesWithNameFromTrees(treeHashes []string) (map[string]string, err
 			if splitedLine[1] == "tree" {
 				newTreeHash := splitedLine[2]
 				treeName := splitedLine[3]
-				newTreeHashes[treeName] = newTreeHash
+				newTreeHashes[newTreeHash] = treeName
 			}
 		}
 	}
