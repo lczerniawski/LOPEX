@@ -14,6 +14,44 @@ func main() {
 		Usage: "LOPEX is a powerful command-line tool designed to exploit misconfigured web servers and extract leftover files from source control repositories.",
 		Commands: []*cli.Command{
 			{
+				Name:  "all",
+				Usage: "Run all available exploits.",
+				Action: func(ctx *cli.Context) error {
+					err := runGit(ctx)
+					if err != nil {
+						return err
+					}
+
+					err = runMercurial(ctx)
+					if err != nil {
+						return err
+					}
+
+					err = runSvn(ctx)
+					if err != nil {
+						return err
+					}
+
+					return nil
+				},
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "url",
+						Aliases:  []string{"u"},
+						Value:    "",
+						Usage:    "Url to look for the files",
+						Required: true,
+					},
+					&cli.StringFlag{
+						Name:     "outputFolder",
+						Aliases:  []string{"o"},
+						Value:    "repo-dump",
+						Usage:    "Output folder for the dumped repo",
+						Required: false,
+					},
+				},
+			},
+			{
 				Name:   "git",
 				Usage:  "Try to dump files from git repositories.",
 				Action: runGit,
@@ -88,7 +126,7 @@ func runGit(c *cli.Context) error {
 	var urlFlag = c.String("url")
 	var outputFolder = c.String("outputFolder")
 
-	println("Downloading .git files")
+	println("Try to download git repository files.")
 	err := git.TryDumpGitRepo(urlFlag, outputFolder)
 	if err != nil {
 		println(err.Error())
