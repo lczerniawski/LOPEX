@@ -10,23 +10,71 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:   "lopex",
-		Usage:  "LOPEX is a powerful command-line tool designed to exploit misconfigured web servers and extract leftover files from source control repositories.",
-		Action: appMain,
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:     "url",
-				Aliases:  []string{"u"},
-				Value:    "",
-				Usage:    "Url to look for the files",
-				Required: true,
+		Name:  "lopex",
+		Usage: "LOPEX is a powerful command-line tool designed to exploit misconfigured web servers and extract leftover files from source control repositories.",
+		Commands: []*cli.Command{
+			{
+				Name:   "git",
+				Usage:  "Try to dump files from git repositories.",
+				Action: runGit,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "url",
+						Aliases:  []string{"u"},
+						Value:    "",
+						Usage:    "Url to look for the files",
+						Required: true,
+					},
+					&cli.StringFlag{
+						Name:     "outputFolder",
+						Aliases:  []string{"o"},
+						Value:    "repo-dump",
+						Usage:    "Output folder for the dumped repo",
+						Required: false,
+					},
+				},
 			},
-			&cli.StringFlag{
-				Name:     "outputFolder",
-				Aliases:  []string{"o"},
-				Value:    "git-dump",
-				Usage:    "Output folder for the dumped .git files",
-				Required: false,
+			{
+				Name:   "mercurial",
+				Usage:  "Try to dump files from mercurial repositories.",
+				Action: runMercurial,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "url",
+						Aliases:  []string{"u"},
+						Value:    "",
+						Usage:    "Url to look for the files",
+						Required: true,
+					},
+					&cli.StringFlag{
+						Name:     "outputFolder",
+						Aliases:  []string{"o"},
+						Value:    "repo-dump",
+						Usage:    "Output folder for the dumped repo",
+						Required: false,
+					},
+				},
+			},
+			{
+				Name:   "svn",
+				Usage:  "Try to dump files from subversion repositories.",
+				Action: runSvn,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "url",
+						Aliases:  []string{"u"},
+						Value:    "",
+						Usage:    "Url to look for the files",
+						Required: true,
+					},
+					&cli.StringFlag{
+						Name:     "outputFolder",
+						Aliases:  []string{"o"},
+						Value:    "repo-dump",
+						Usage:    "Output folder for the dumped repo",
+						Required: false,
+					},
+				},
 			},
 		},
 	}
@@ -36,7 +84,7 @@ func main() {
 	}
 }
 
-func appMain(c *cli.Context) error {
+func runGit(c *cli.Context) error {
 	var urlFlag = c.String("url")
 	var outputFolder = c.String("outputFolder")
 
@@ -47,4 +95,12 @@ func appMain(c *cli.Context) error {
 	}
 
 	return nil
+}
+
+func runMercurial(c *cli.Context) error {
+	panic("Unimplemented")
+}
+
+func runSvn(c *cli.Context) error {
+	panic("Unimplemented")
 }
