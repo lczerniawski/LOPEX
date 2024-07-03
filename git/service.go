@@ -12,20 +12,20 @@ import (
 	"github.com/lczerniawski/LOPEX/helpers"
 )
 
-func TryDumpGitRepo(baseUrl, outputFolder string) error {
-	canBeDownloaded, err := checkIfGitFolderCanBeDownloaded(baseUrl)
+func TryDownloadGitRepository(baseUrl, outputFolder string) error {
+	canBeDownloaded, err := checkIfGitFolderExists(baseUrl)
 	if !canBeDownloaded {
 		return err
 	}
+	println("Git folder found.")
 
-	println("Git folder found, downloading files")
-	println("Initializing git repo")
-
-	err = InitializeGitRepo(outputFolder)
+	println("Initializing git repository.")
+	err = InitializeGitRepository(outputFolder)
 	if err != nil {
 		return err
 	}
 
+	println("Downloading of git repository started.")
 	commitHashes, err := getCommitHashes(baseUrl)
 	if err != nil {
 		return err
@@ -76,6 +76,8 @@ func TryDumpGitRepo(baseUrl, outputFolder string) error {
 		return err
 	}
 
+	println("Download succeeded")
+	fmt.Printf("All files can be found under %s", outputFolder)
 	return nil
 }
 
@@ -182,7 +184,7 @@ func getCommitHashes(baseUrl string) ([]string, error) {
 	return hashes, nil
 }
 
-func checkIfGitFolderCanBeDownloaded(baseUrl string) (bool, error) {
+func checkIfGitFolderExists(baseUrl string) (bool, error) {
 	resp, err := http.Head(baseUrl + "/.git")
 	if err != nil {
 		return false, err

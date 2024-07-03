@@ -101,7 +101,7 @@ func GetTreeHashesWithNameFromTrees(treeHashes []string, outputFolder string) (m
 	return newTreeHashes, nil
 }
 
-func InitializeGitRepo(outputFolder string) error {
+func InitializeGitRepository(outputFolder string) error {
 	err := os.MkdirAll(outputFolder, 0755)
 	if err != nil {
 		return err

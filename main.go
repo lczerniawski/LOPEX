@@ -127,7 +127,7 @@ func runGit(c *cli.Context) error {
 	var outputFolder = c.String("outputFolder")
 
 	println("Try to download git repository files.")
-	err := git.TryDumpGitRepo(urlFlag, outputFolder)
+	err := git.TryDownloadGitRepository(urlFlag, outputFolder)
 	if err != nil {
 		println(err.Error())
 	}
