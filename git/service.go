@@ -12,7 +12,7 @@ import (
 	"github.com/lczerniawski/LOPEX/helpers"
 )
 
-func TryDumpGitRepo(baseUrl string) error {
+func TryDumpGitRepo(baseUrl, outputFolder string) error {
 	canBeDownloaded, err := checkIfGitFolderCanBeDownloaded(baseUrl)
 	if !canBeDownloaded {
 		return err
@@ -21,7 +21,7 @@ func TryDumpGitRepo(baseUrl string) error {
 	println("Git folder found, downloading files")
 	println("Initializing git repo")
 
-	err = InitializeGitRepo()
+	err = InitializeGitRepo(outputFolder)
 	if err != nil {
 		return err
 	}
@@ -31,47 +31,47 @@ func TryDumpGitRepo(baseUrl string) error {
 		return err
 	}
 
-	err = downloadAndSaveGitHubObjectFiles(baseUrl, commitHashes)
+	err = downloadAndSaveGitHubObjectFiles(baseUrl, outputFolder, commitHashes)
 	if err != nil {
 		return err
 	}
 
-	treeHashes, err := GetTreeHashesFromCommits(commitHashes)
+	treeHashes, err := GetTreeHashesFromCommits(commitHashes, outputFolder)
 	if err != nil {
 		return err
 	}
 
-	err = downloadAndSaveGitHubObjectFiles(baseUrl, treeHashes)
+	err = downloadAndSaveGitHubObjectFiles(baseUrl, outputFolder, treeHashes)
 	if err != nil {
 		return err
 	}
 
-	blobHashesWithName, err := GetBlobHashesAndNamesFromTrees(treeHashes)
+	blobHashesWithName, err := GetBlobHashesAndNamesFromTrees(treeHashes, outputFolder)
 
 	if err != nil {
 		return err
 	}
 
 	blobHashes := helpers.ConvertMapToArray(blobHashesWithName)
-	err = downloadAndSaveGitHubObjectFiles(baseUrl, blobHashes)
+	err = downloadAndSaveGitHubObjectFiles(baseUrl, outputFolder, blobHashes)
 	if err != nil {
 		return err
 	}
 
 	for hash, name := range blobHashesWithName {
-		content, err := GetFileContentFromBlob(hash)
+		content, err := GetFileContentFromBlob(hash, outputFolder)
 		if err != nil {
 			continue
 		}
 
-		fileName := fmt.Sprintf("repoDump/%d-%s", rand.Int(), name)
+		fileName := fmt.Sprintf("%s/%d-%s", outputFolder, rand.Int(), name)
 		err = helpers.SaveStringToDisc(content, fileName)
 		if err != nil {
 			continue
 		}
 	}
 
-	err = getFilesRecursively(baseUrl, treeHashes)
+	err = getFilesRecursively(baseUrl, outputFolder, treeHashes)
 	if err != nil {
 		return err
 	}
@@ -79,14 +79,14 @@ func TryDumpGitRepo(baseUrl string) error {
 	return nil
 }
 
-func getFilesRecursively(baseUrl string, treeHashes []string) error {
-	treeHashesWithName, err := GetTreeHashesWithNameFromTrees(treeHashes)
+func getFilesRecursively(baseUrl, outputFolder string, treeHashes []string) error {
+	treeHashesWithName, err := GetTreeHashesWithNameFromTrees(treeHashes, outputFolder)
 	if err != nil {
 		return err
 	}
 
 	treeHashesArr := helpers.ConvertMapToArray(treeHashesWithName)
-	err = downloadAndSaveGitHubObjectFiles(baseUrl, treeHashesArr)
+	err = downloadAndSaveGitHubObjectFiles(baseUrl, outputFolder, treeHashesArr)
 	if err != nil {
 		return err
 	}
@@ -102,24 +102,24 @@ func getFilesRecursively(baseUrl string, treeHashes []string) error {
 		treeHashesArr = treeHashesArr[1:]
 
 		// Get all the files inside the folders
-		blobHashesWithNameTemp, err := GetBlobHashesAndNamesFromTrees([]string{treeHash})
+		blobHashesWithNameTemp, err := GetBlobHashesAndNamesFromTrees([]string{treeHash}, outputFolder)
 		if err != nil {
 			return err
 		}
 
 		blobHashesTemp := helpers.ConvertMapToArray(blobHashesWithNameTemp)
-		err = downloadAndSaveGitHubObjectFiles(baseUrl, blobHashesTemp)
+		err = downloadAndSaveGitHubObjectFiles(baseUrl, outputFolder, blobHashesTemp)
 		if err != nil {
 			return err
 		}
 
 		for hash, name := range blobHashesWithNameTemp {
-			content, err := GetFileContentFromBlob(hash)
+			content, err := GetFileContentFromBlob(hash, outputFolder)
 			if err != nil {
 				continue
 			}
 
-			fileName := fmt.Sprintf("repoDump/%s/%d-%s", treeName, rand.Int(), name)
+			fileName := fmt.Sprintf("%s/%s/%d-%s", outputFolder, treeName, rand.Int(), name)
 			err = helpers.SaveStringToDisc(content, fileName)
 			if err != nil {
 				continue
@@ -127,12 +127,12 @@ func getFilesRecursively(baseUrl string, treeHashes []string) error {
 		}
 
 		blobHashes := helpers.ConvertMapToArray(blobHashesWithNameTemp)
-		err = downloadAndSaveGitHubObjectFiles(baseUrl, blobHashes)
+		err = downloadAndSaveGitHubObjectFiles(baseUrl, outputFolder, blobHashes)
 		if err != nil {
 			return err
 		}
 
-		treeHashesWithNameTemp, err := GetTreeHashesWithNameFromTrees([]string{treeHash})
+		treeHashesWithNameTemp, err := GetTreeHashesWithNameFromTrees([]string{treeHash}, outputFolder)
 		if err != nil {
 			return err
 		}
@@ -142,7 +142,7 @@ func getFilesRecursively(baseUrl string, treeHashes []string) error {
 		}
 
 		treeHashesArrTemp := helpers.ConvertMapToArray(treeHashesWithNameTemp)
-		err = downloadAndSaveGitHubObjectFiles(baseUrl, treeHashesArr)
+		err = downloadAndSaveGitHubObjectFiles(baseUrl, outputFolder, treeHashesArr)
 		if err != nil {
 			return err
 		}
@@ -197,14 +197,14 @@ func checkIfGitFolderCanBeDownloaded(baseUrl string) (bool, error) {
 	return false, errors.New(".git Not found")
 }
 
-func downloadAndSaveGitHubObjectFiles(baseUrl string, hashes []string) error {
+func downloadAndSaveGitHubObjectFiles(baseUrl, outputFolder string, hashes []string) error {
 	for _, hash := range hashes {
 		resp, err := helpers.GetFile(baseUrl, fmt.Sprintf("/.git/objects/%s/%s", hash[:2], hash[2:]))
 		if err != nil {
 			return err
 		}
 
-		err = helpers.SaveToDisc(resp.Body, fmt.Sprintf("repoDump/.git/objects/%s/%s", hash[:2], hash[2:]))
+		err = helpers.SaveToDisc(resp.Body, fmt.Sprintf("%s/.git/objects/%s/%s", outputFolder, hash[:2], hash[2:]))
 		if err != nil {
 			return err
 		}

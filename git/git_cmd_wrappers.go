@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-func GetFileContentFromBlob(blobHash string) (string, error) {
+func GetFileContentFromBlob(blobHash, outputFolder string) (string, error) {
 	cmd := exec.Command("git", "cat-file", "-p", blobHash)
-	cmd.Dir = "repoDump"
+	cmd.Dir = outputFolder
 	out, err := cmd.Output()
 	if err != nil {
 		return "", err
@@ -18,12 +18,12 @@ func GetFileContentFromBlob(blobHash string) (string, error) {
 	return string(out), nil
 }
 
-func GetBlobHashesAndNamesFromTrees(treeHashes []string) (map[string]string, error) {
+func GetBlobHashesAndNamesFromTrees(treeHashes []string, outputFolder string) (map[string]string, error) {
 	blobHashesWithNames := make(map[string]string)
 
 	for _, treeHash := range treeHashes {
 		cmd := exec.Command("git", "cat-file", "-p", treeHash)
-		cmd.Dir = "repoDump"
+		cmd.Dir = outputFolder
 		out, err := cmd.Output()
 		if err != nil {
 			continue
@@ -48,12 +48,12 @@ func GetBlobHashesAndNamesFromTrees(treeHashes []string) (map[string]string, err
 	return blobHashesWithNames, nil
 }
 
-func GetTreeHashesFromCommits(commitHashes []string) ([]string, error) {
+func GetTreeHashesFromCommits(commitHashes []string, outputFolder string) ([]string, error) {
 	treeHashes := make([]string, 0)
 
 	for _, commitHash := range commitHashes {
 		cmd := exec.Command("git", "cat-file", "-p", commitHash)
-		cmd.Dir = "repoDump"
+		cmd.Dir = outputFolder
 		out, err := cmd.Output()
 		if err != nil {
 			continue
@@ -71,12 +71,12 @@ func GetTreeHashesFromCommits(commitHashes []string) ([]string, error) {
 	return treeHashes, nil
 }
 
-func GetTreeHashesWithNameFromTrees(treeHashes []string) (map[string]string, error) {
+func GetTreeHashesWithNameFromTrees(treeHashes []string, outputFolder string) (map[string]string, error) {
 	newTreeHashes := make(map[string]string)
 
 	for _, treeHash := range treeHashes {
 		cmd := exec.Command("git", "cat-file", "-p", treeHash)
-		cmd.Dir = "repoDump"
+		cmd.Dir = outputFolder
 		out, err := cmd.Output()
 		if err != nil {
 			continue
@@ -101,14 +101,14 @@ func GetTreeHashesWithNameFromTrees(treeHashes []string) (map[string]string, err
 	return newTreeHashes, nil
 }
 
-func InitializeGitRepo() error {
-	err := os.MkdirAll("repoDump", 0755)
+func InitializeGitRepo(outputFolder string) error {
+	err := os.MkdirAll(outputFolder, 0755)
 	if err != nil {
 		return err
 	}
 
 	cmd := exec.Command("git", "init")
-	cmd.Dir = "repoDump"
+	cmd.Dir = outputFolder
 	err = cmd.Run()
 	if err != nil {
 		return err

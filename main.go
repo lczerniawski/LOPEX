@@ -12,7 +12,7 @@ func main() {
 	app := &cli.App{
 		Name:   "lopex",
 		Usage:  "LOPEX is a powerful command-line tool designed to exploit misconfigured web servers and extract leftover files from source control repositories.",
-		Action: dumpGitRepo,
+		Action: appMain,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:     "url",
@@ -20,6 +20,13 @@ func main() {
 				Value:    "",
 				Usage:    "Url to look for the files",
 				Required: true,
+			},
+			&cli.StringFlag{
+				Name:     "outputFolder",
+				Aliases:  []string{"o"},
+				Value:    "git-dump",
+				Usage:    "Output folder for the dumped .git files",
+				Required: false,
 			},
 		},
 	}
@@ -29,11 +36,12 @@ func main() {
 	}
 }
 
-func dumpGitRepo(c *cli.Context) error {
+func appMain(c *cli.Context) error {
 	var urlFlag = c.String("url")
+	var outputFolder = c.String("outputFolder")
 
 	println("Downloading .git files")
-	err := git.TryDumpGitRepo(urlFlag)
+	err := git.TryDumpGitRepo(urlFlag, outputFolder)
 	if err != nil {
 		println(err.Error())
 	}
