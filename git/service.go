@@ -1,11 +1,9 @@
 package git
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"math/rand"
-	"net/http"
 	"path"
 	"strings"
 
@@ -13,7 +11,7 @@ import (
 )
 
 func TryDownloadGitRepository(baseUrl, outputFolder string) error {
-	canBeDownloaded, err := checkIfGitFolderExists(baseUrl)
+	canBeDownloaded, err := helpers.CheckIfFolderExists(baseUrl, ".git")
 	if !canBeDownloaded {
 		return err
 	}
@@ -182,21 +180,6 @@ func getCommitHashes(baseUrl string) ([]string, error) {
 	}
 
 	return hashes, nil
-}
-
-func checkIfGitFolderExists(baseUrl string) (bool, error) {
-	resp, err := http.Head(baseUrl + "/.git")
-	if err != nil {
-		return false, err
-	}
-	defer resp.Body.Close()
-
-	statusCode := resp.StatusCode
-	if statusCode != 404 {
-		return true, nil
-	}
-
-	return false, errors.New(".git Not found")
 }
 
 func downloadAndSaveGitHubObjectFiles(baseUrl, outputFolder string, hashes []string) error {

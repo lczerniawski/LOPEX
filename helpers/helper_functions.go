@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"os"
@@ -60,4 +61,19 @@ func SaveStringToDisc(content, pathToSave string) error {
 
 	_, err = file.WriteString(content)
 	return err
+}
+
+func CheckIfFolderExists(baseUrl, folderName string) (bool, error) {
+	resp, err := http.Head(baseUrl + "/" + folderName)
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	statusCode := resp.StatusCode
+	if statusCode != 404 {
+		return true, nil
+	}
+
+	return false, errors.New(folderName + " Not found")
 }

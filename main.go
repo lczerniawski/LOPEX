@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/lczerniawski/LOPEX/git"
+	"github.com/lczerniawski/LOPEX/svn"
 	"github.com/urfave/cli/v2"
 )
 
@@ -140,5 +141,14 @@ func runMercurial(c *cli.Context) error {
 }
 
 func runSvn(c *cli.Context) error {
-	panic("Unimplemented")
+	var urlFlag = c.String("url")
+	var outputFolder = c.String("outputFolder")
+
+	println("Try to download svn repository files.")
+	err := svn.TryDownloadSvnRepository(urlFlag, outputFolder)
+	if err != nil {
+		println(err.Error())
+	}
+
+	return nil
 }
