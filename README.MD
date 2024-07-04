@@ -8,4 +8,34 @@ LOPEX is a powerful command-line tool designed to exploit misconfigured web serv
 - **Customizable Options:** LOPEX offers customizable options, enabling users to specify target directories, file types, and extraction methods to suit their specific requirements.
 - **Comprehensive Reporting:** Upon completion of extraction tasks, LOPEX generates comprehensive reports detailing the extracted files, their locations, and any relevant metadata, facilitating thorough analysis and review.
 
-Whether you're a developer, sysadmin, or security professional, LOPEX is the ultimate solution for efficiently exploiting misconfigured web servers and retrieving leftover project files from source control repositories.
+## Usage:
+
+To use LOPEX, simply execute the command with the desired option. For example:
+lopex
+
+
+### Commands:
+
+* `all`        Run all available exploits.
+* `git`       Try to dump files from git repositories.
+* `mercurial`  Try to dump files from mercurial repositories.
+* `svn`       Try to dump files from subversion repositories.
+* `help`, `h`  Shows a list of commands or help for one command
+
+### Command Options:
+```
+Usage: lopex [command] [command options] [arguments...]
+```
+
+Options: 
+* --url value, -u value Url to look for the files
+* --outputFolder value, -o value Output folder for the dumped repo (default: "repo-dump") 
+* --help, -h show help
+
+
+### Currently Planned:
+
+* Mercurial support
+* IDEs files support
+
+By using LOPEX, you can efficiently extract leftover project
