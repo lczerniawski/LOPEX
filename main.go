@@ -23,11 +23,6 @@ func main() {
 						return err
 					}
 
-					err = runMercurial(ctx)
-					if err != nil {
-						return err
-					}
-
 					err = runSvn(ctx)
 					if err != nil {
 						return err
@@ -56,27 +51,6 @@ func main() {
 				Name:   "git",
 				Usage:  "Try to dump files from git repositories.",
 				Action: runGit,
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:     "url",
-						Aliases:  []string{"u"},
-						Value:    "",
-						Usage:    "Url to look for the files",
-						Required: true,
-					},
-					&cli.StringFlag{
-						Name:     "outputFolder",
-						Aliases:  []string{"o"},
-						Value:    "repo-dump",
-						Usage:    "Output folder for the dumped repo",
-						Required: false,
-					},
-				},
-			},
-			{
-				Name:   "mercurial",
-				Usage:  "Try to dump files from mercurial repositories.",
-				Action: runMercurial,
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:     "url",
@@ -134,10 +108,6 @@ func runGit(c *cli.Context) error {
 	}
 
 	return nil
-}
-
-func runMercurial(c *cli.Context) error {
-	panic("Unimplemented")
 }
 
 func runSvn(c *cli.Context) error {

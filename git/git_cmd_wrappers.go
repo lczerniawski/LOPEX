@@ -32,14 +32,14 @@ func GetBlobHashesAndNamesFromTrees(treeHashes []string, outputFolder string) (m
 		lines := strings.Split(string(out), "\n")
 		for _, line := range lines {
 			re := regexp.MustCompile(`\s+`)
-			splitedLine := re.Split(line, -1)
-			if len(splitedLine) < 4 {
+			splitLine := re.Split(line, -1)
+			if len(splitLine) < 4 {
 				continue
 			}
 
-			if splitedLine[1] == "blob" {
-				blobHash := splitedLine[2]
-				blobName := splitedLine[3]
+			if splitLine[1] == "blob" {
+				blobHash := splitLine[2]
+				blobName := splitLine[3]
 				blobHashesWithNames[blobHash] = blobName
 			}
 		}
@@ -85,14 +85,14 @@ func GetTreeHashesWithNameFromTrees(treeHashes []string, outputFolder string) (m
 		lines := strings.Split(string(out), "\n")
 		for _, line := range lines {
 			re := regexp.MustCompile(`\s+`)
-			splitedLine := re.Split(line, -1)
-			if len(splitedLine) < 4 {
+			splitLine := re.Split(line, -1)
+			if len(splitLine) < 4 {
 				continue
 			}
 
-			if splitedLine[1] == "tree" {
-				newTreeHash := splitedLine[2]
-				treeName := splitedLine[3]
+			if splitLine[1] == "tree" {
+				newTreeHash := splitLine[2]
+				treeName := splitLine[3]
 				newTreeHashes[newTreeHash] = treeName
 			}
 		}

@@ -18,7 +18,6 @@ lopex
 
 * `all`        Run all available exploits.
 * `git`       Try to dump files from git repositories.
-* `mercurial`  Try to dump files from mercurial repositories.
 * `svn`       Try to dump files from subversion repositories.
 * `help`, `h`  Shows a list of commands or help for one command
 
@@ -35,7 +34,4 @@ Options:
 
 ### Currently Planned:
 
-* Mercurial support
 * IDEs files support
-
-By using LOPEX, you can efficiently extract leftover project
