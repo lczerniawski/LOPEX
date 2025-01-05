@@ -1,5 +1,7 @@
 # LOPEX: Leftover Project Extractor
 
+![screenshot](images/screenshot.png)
+
 LOPEX is a powerful command-line tool designed to exploit misconfigured web servers and extract leftover files from source control repositories. With its intuitive interface and efficient algorithms, LOPEX automates the extraction process, swiftly identifying and retrieving files that have been inadvertently left behind due to misconfigurations.
 
 ## Key Features:
