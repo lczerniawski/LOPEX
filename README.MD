@@ -8,6 +8,38 @@ LOPEX is a powerful command-line tool designed to exploit misconfigured web serv
 - **Customizable Options:** LOPEX offers customizable options, enabling users to specify target directories, file types, and extraction methods to suit their specific requirements.
 - **Comprehensive Reporting:** Upon completion of extraction tasks, LOPEX generates comprehensive reports detailing the extracted files, their locations, and any relevant metadata, facilitating thorough analysis and review.
 
+## Installation
+
+To install LOPEX, you can use the `go install` command:
+
+```sh
+go install github.com/lczerniawski/LOPEX@latest
+```
+
+This command will download the repository, build the application, and install the binary in your $GOPATH/bin directory.
+
+Make sure your $GOPATH/bin directory is in your system's PATH so you can run the installed CLI tool from anywhere.
+
+Alternatively, you can follow these steps:
+
+1. Clone the repository:
+```sh
+git clone https://github.com/lczerniawski/LOPEX.git
+```
+2. Navigate to the project directory:
+```sh
+cd LOPEX
+```
+3. Build the project:
+```sh
+go build
+```
+4. Run the executable:
+```sh
+./lopex
+```
+
+
 ## Usage:
 
 To use LOPEX, simply execute the command with the desired option. For example:
